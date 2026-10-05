@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AI Dialogue Summarizer</title>
+
+
+    <style>
+
+        /* =====================================================
+           RESET
+        ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+
+        /* =====================================================
+           BODY
+        ===================================================== */
+
+        body {
+
+            font-family:
+                Inter,
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            min-height: 100vh;
+
+            color: #f8fafc;
+
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(99, 102, 241, 0.25),
+                    transparent 30%
+                ),
+
+                radial-gradient(
+                    circle at 90% 90%,
+                    rgba(139, 92, 246, 0.20),
+                    transparent 30%
+                ),
+
+                #020617;
+
+            display: flex;
+
+            justify-content: center;
+
+            padding: 45px 20px;
+
+        }
+
+
+        /* =====================================================
+           MAIN CONTAINER
+        ===================================================== */
+
+        .container {
+
+            width: 100%;
+
+            max-width: 1000px;
+
+        }
+
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .header {
+
+            text-align: center;
+
+            margin-bottom: 35px;
+
+        }
+
+
+        .logo {
+
+            width: 72px;
+
+            height: 72px;
+
+            margin: 0 auto 18px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 22px;
+
+            font-size: 34px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6366f1,
+                    #8b5cf6
+                );
+
+            box-shadow:
+                0 15px 40px rgba(99, 102, 241, 0.35);
+
+        }
+
+
+        .header h1 {
+
+            font-size: clamp(28px, 5vw, 42px);
+
+            font-weight: 750;
+
+            letter-spacing: -1px;
+
+        }
+
+
+        .header h1 span {
+
+            background:
+                linear-gradient(
+                    90deg,
+                    #818cf8,
+                    #c084fc
+                );
+
+            -webkit-background-clip: text;
+
+            -webkit-text-fill-color: transparent;
+
+        }
+
+
+        .header p {
+
+            margin-top: 12px;
+
+            color: #94a3b8;
+
+            font-size: 16px;
+
+            line-height: 1.6;
+
+        }
+
+
+        /* =====================================================
+           MAIN CARD
+        ===================================================== */
+
+        .card {
+
+            background:
+                rgba(15, 23, 42, 0.72);
+
+            backdrop-filter: blur(18px);
+
+            -webkit-backdrop-filter: blur(18px);
+
+            border:
+                1px solid rgba(148, 163, 184, 0.14);
+
+            border-radius: 26px;
+
+            padding: 30px;
+
+            box-shadow:
+                0 30px 80px rgba(0, 0, 0, 0.45);
+
+        }
+
+
+        /* =====================================================
+           SECTION HEADER
+        ===================================================== */
+
+        .section-header {
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 12px;
+
+        }
+
+
+        .section-title {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            font-size: 16px;
+
+            font-weight: 650;
+
+        }
+
+
+        .section-icon {
+
+            width: 34px;
+
+            height: 34px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 10px;
+
+            background:
+                rgba(99, 102, 241, 0.14);
+
+        }
+
+
+        .limit {
+
+            font-size: 13px;
+
+            color: #64748b;
+
+        }
+
+
+        /* =====================================================
+           TEXTAREA
+        ===================================================== */
+
+        .textarea-wrapper {
+
+            position: relative;
+
+        }
+
+
+        textarea {
+
+            width: 100%;
+
+            min-height: 300px;
+
+            resize: vertical;
+
+            padding: 20px;
+
+            padding-bottom: 45px;
+
+            border-radius: 18px;
+
+            border:
+                1px solid #263449;
+
+            outline: none;
+
+            background:
+                rgba(2, 6, 23, 0.75);
+
+            color: #f8fafc;
+
+            font-size: 16px;
+
+            line-height: 1.7;
+
+            transition:
+                border-color 0.2s,
+                box-shadow 0.2s;
+
+        }
+
+
+        textarea::placeholder {
+
+            color: #475569;
+
+        }
+
+
+        textarea:focus {
+
+            border-color: #6366f1;
+
+            box-shadow:
+                0 0 0 4px rgba(99, 102, 241, 0.10);
+
+        }
+
+
+        /* =====================================================
+           COUNT BAR
+        ===================================================== */
+
+        .count-bar {
+
+            position: absolute;
+
+            left: 15px;
+
+            right: 15px;
+
+            bottom: 12px;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            pointer-events: none;
+
+        }
+
+
+        .count {
+
+            font-size: 12px;
+
+            color: #64748b;
+
+        }
+
+
+        .count.warning {
+
+            color: #f59e0b;
+
+        }
+
+
+        .count.danger {
+
+            color: #f87171;
+
+        }
+
+
+        /* =====================================================
+           BUTTONS
+        ===================================================== */
+
+        .actions {
+
+            display: flex;
+
+            gap: 12px;
+
+            margin-top: 18px;
+
+        }
+
+
+        button {
+
+            border: none;
+
+            outline: none;
+
+            cursor: pointer;
+
+            font-size: 15px;
+
+            font-weight: 650;
+
+            border-radius: 13px;
+
+            padding: 14px 22px;
+
+            transition:
+                transform 0.2s,
+                box-shadow 0.2s,
+                opacity 0.2s;
+
+        }
+
+
+        button:hover {
+
+            transform: translateY(-2px);
+
+        }
+
+
+        button:disabled {
+
+            cursor: not-allowed;
+
+            opacity: 0.6;
+
+            transform: none;
+
+        }
+
+
+        .summarize-btn {
+
+            flex: 1;
+
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #6366f1,
+                    #8b5cf6
+                );
+
+            box-shadow:
+                0 10px 25px rgba(99, 102, 241, 0.25);
+
+        }
+
+
+        .summarize-btn:hover {
+
+            box-shadow:
+                0 15px 35px rgba(99, 102, 241, 0.38);
+
+        }
+
+
+        .clear-btn {
+
+            color: #cbd5e1;
+
+            background:
+                #172033;
+
+            border:
+                1px solid #263449;
+
+        }
+
+
+        .clear-btn:hover {
+
+            background:
+                #1e293b;
+
+        }
+
+
+        /* =====================================================
+           LOADING
+        ===================================================== */
+
+        .loading {
+
+            display: none;
+
+            margin-top: 25px;
+
+            text-align: center;
+
+            color: #94a3b8;
+
+        }
+
+
+        .spinner {
+
+            width: 28px;
+
+            height: 28px;
+
+            margin: 0 auto 10px;
+
+            border:
+                3px solid #334155;
+
+            border-top-color:
+                #818cf8;
+
+            border-radius: 50%;
+
+            animation:
+                spin 0.8s linear infinite;
+
+        }
+
+
+        @keyframes spin {
+
+            to {
+                transform: rotate(360deg);
+            }
+
+        }
+
+
+        /* =====================================================
+           ERROR
+        ===================================================== */
+
+        .error-box {
+
+            display: none;
+
+            margin-top: 20px;
+
+            padding: 14px 16px;
+
+            border-radius: 12px;
+
+            background:
+                rgba(239, 68, 68, 0.08);
+
+            border:
+                1px solid rgba(239, 68, 68, 0.25);
+
+            color: #fca5a5;
+
+            font-size: 14px;
+
+        }
+
+
+        /* =====================================================
+           SUMMARY
+        ===================================================== */
+
+        .summary-box {
+
+            display: none;
+
+            margin-top: 30px;
+
+            padding: 24px;
+
+            border-radius: 18px;
+
+            background:
+                rgba(2, 6, 23, 0.70);
+
+            border:
+                1px solid #263449;
+
+            animation:
+                fadeUp 0.35s ease;
+
+        }
+
+
+        @keyframes fadeUp {
+
+            from {
+
+                opacity: 0;
+
+                transform:
+                    translateY(10px);
+
+            }
+
+            to {
+
+                opacity: 1;
+
+                transform:
+                    translateY(0);
+
+            }
+
+        }
+
+
+        .summary-top {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 15px;
+
+            margin-bottom: 18px;
+
+        }
+
+
+        .summary-heading {
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 11px;
+
+        }
+
+
+        .summary-icon {
+
+            width: 40px;
+
+            height: 40px;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            border-radius: 11px;
+
+            background:
+                rgba(99, 102, 241, 0.15);
+
+            font-size: 20px;
+
+        }
+
+
+        .summary-heading h2 {
+
+            font-size: 19px;
+
+        }
+
+
+        .copy-btn {
+
+            padding: 9px 13px;
+
+            font-size: 13px;
+
+            color: #cbd5e1;
+
+            background:
+                #172033;
+
+            border:
+                1px solid #263449;
+
+        }
+
+
+        .summary-text {
+
+            color: #cbd5e1;
+
+            font-size: 16px;
+
+            line-height: 1.8;
+
+            white-space: pre-wrap;
+
+        }
+
+
+        .summary-stats {
+
+            display: flex;
+
+            gap: 10px;
+
+            margin-top: 18px;
+
+            padding-top: 15px;
+
+            border-top:
+                1px solid #1e293b;
+
+        }
+
+
+        .stat {
+
+            padding: 7px 10px;
+
+            border-radius: 8px;
+
+            background:
+                rgba(255,255,255,0.035);
+
+            color: #64748b;
+
+            font-size: 12px;
+
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        .footer {
+
+            text-align: center;
+
+            margin-top: 20px;
+
+            color: #475569;
+
+            font-size: 12px;
+
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 650px) {
+
+            body {
+
+                padding:
+                    25px 12px;
+
+            }
+
+
+            .card {
+
+                padding: 20px;
+
+                border-radius: 20px;
+
+            }
+
+
+            textarea {
+
+                min-height: 250px;
+
+            }
+
+
+            .actions {
+
+                flex-direction: column;
+
+            }
+
+
+            .summarize-btn {
+
+                width: 100%;
+
+            }
+
+
+            .clear-btn {
+
+                width: 100%;
+
+            }
+
+
+            .summary-top {
+
+                align-items: flex-start;
+
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <main class="container">
+
+
+        <!-- =================================================
+             HEADER
+        ================================================== -->
+
+        <header class="header">
+
+            <div class="logo">
+                🤖
+            </div>
+
+            <h1>
+                AI <span>Dialogue Summarizer</span>
+            </h1>
+
+            <p>
+                Turn long conversations into clear,
+                concise summaries using your fine-tuned T5 model.
+            </p>
+
+        </header>
+
+
+        <!-- =================================================
+             MAIN CARD
+        ================================================== -->
+
+        <section class="card">
+
+
+            <!-- INPUT HEADER -->
+
+            <div class="section-header">
+
+                <div class="section-title">
+
+                    <div class="section-icon">
+                        💬
+                    </div>
+
+                    <span>
+                        Your Dialogue
+                    </span>
+
+                </div>
+
+
+                <div class="limit">
+                    Maximum 512 tokens
+                </div>
+
+            </div>
+
+
+            <!-- TEXTAREA -->
+
+            <div class="textarea-wrapper">
+
+                <textarea
+                    id="dialogue"
+                    placeholder="Paste your conversation here...
+
+Example:
+John: Are you coming to the meeting tomorrow?
+Sarah: Yes, I will prepare the presentation tonight.
+John: Great. I will bring the sales report."
+                ></textarea>
+
+
+                <!-- LIVE COUNTERS -->
+
+                <div class="count-bar">
+
+                    <span
+                        class="count"
+                        id="charCount"
+                    >
+                        0 characters
+                    </span>
+
+
+                    <span
+                        class="count"
+                        id="tokenCount"
+                    >
+                        ~0 tokens
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTION BUTTONS -->
+
+            <div class="actions">
+
+                <button
+                    class="summarize-btn"
+                    id="summarizeBtn"
+                    onclick="summarizeDialogue()"
+                >
+                    ✨ Summarize Dialogue
+                </button>
+
+
+                <button
+                    class="clear-btn"
+                    onclick="clearAll()"
+                >
+                    🗑 Clear
+                </button>
+
+            </div>
+
+
+            <!-- LOADING -->
+
+            <div
+                class="loading"
+                id="loading"
+            >
+
+                <div class="spinner"></div>
+
+                <p>
+                    AI is analyzing your dialogue...
+                </p>
+
+            </div>
+
+
+            <!-- ERROR -->
+
+            <div
+                class="error-box"
+                id="errorBox"
+            ></div>
+
+
+            <!-- =================================================
+                 SUMMARY RESULT
+            ================================================== -->
+
+            <div
+                class="summary-box"
+                id="summaryBox"
+            >
+
+                <div class="summary-top">
+
+
+                    <div class="summary-heading">
+
+                        <div class="summary-icon">
+                            📝
+                        </div>
+
+                        <h2>
+                            Generated Summary
+                        </h2>
+
+                    </div>
+
+
+                    <button
+                        class="copy-btn"
+                        onclick="copySummary()"
+                        id="copyBtn"
+                    >
+                        📋 Copy
+                    </button>
+
+                </div>
+
+
+                <div
+                    class="summary-text"
+                    id="summaryText"
+                ></div>
+
+
+                <div class="summary-stats">
+
+                    <div
+                        class="stat"
+                        id="summaryChars"
+                    >
+                        0 characters
+                    </div>
+
+                    <div
+                        class="stat"
+                        id="summaryTokens"
+                    >
+                        ~0 tokens
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+        <footer class="footer">
+
+            Powered by Fine-Tuned T5 · FastAPI
+
+        </footer>
+
+
+    </main>
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script>
+
+
+        /* =================================================
+           GET ELEMENTS
+        ================================================== */
+
+        const dialogueInput =
+            document.getElementById("dialogue");
+
+        const charCount =
+            document.getElementById("charCount");
+
+        const tokenCount =
+            document.getElementById("tokenCount");
+
+        const summarizeBtn =
+            document.getElementById("summarizeBtn");
+
+        const loading =
+            document.getElementById("loading");
+
+        const summaryBox =
+            document.getElementById("summaryBox");
+
+        const summaryText =
+            document.getElementById("summaryText");
+
+        const errorBox =
+            document.getElementById("errorBox");
+
+        const summaryChars =
+            document.getElementById("summaryChars");
+
+        const summaryTokens =
+            document.getElementById("summaryTokens");
+
+
+        /* =================================================
+           APPROXIMATE TOKEN COUNT
+        ================================================== */
+
+        function getApproxTokens(text) {
+
+            if (!text.trim()) {
+                return 0;
+            }
+
+            /*
+                Rough estimate:
+                1 token ≈ 4 characters
+
+                Exact T5 token count is calculated
+                by the Python tokenizer on the backend.
+            */
+
+            return Math.ceil(text.length / 4);
+
+        }
+
+
+        /* =================================================
+           UPDATE COUNTERS
+        ================================================== */
+
+        function updateCounters() {
+
+            const text =
+                dialogueInput.value;
+
+            const characters =
+                text.length;
+
+            const tokens =
+                getApproxTokens(text);
+
+
+            charCount.innerText =
+                `${characters} characters`;
+
+
+            tokenCount.innerText =
+                `~${tokens} tokens`;
+
+
+            /* Token warning */
+
+            tokenCount.classList.remove(
+                "warning",
+                "danger"
+            );
+
+
+            if (tokens > 512) {
+
+                tokenCount.innerText =
+                    `⚠ ~${tokens} tokens`;
+
+                tokenCount.classList.add(
+                    "danger"
+                );
+
+            }
+
+            else if (tokens > 450) {
+
+                tokenCount.classList.add(
+                    "warning"
+                );
+
+            }
+
+        }
+
+
+        /* =================================================
+           REAL-TIME COUNTER
+        ================================================== */
+
+        dialogueInput.addEventListener(
+            "input",
+            updateCounters
+        );
+
+
+        /* =================================================
+           SUMMARIZE
+        ================================================== */
+
+        async function summarizeDialogue() {
+
+
+            const dialogue =
+                dialogueInput.value.trim();
+
+
+            /* Empty input */
+
+            if (!dialogue) {
+
+                showError(
+                    "Please enter a dialogue first."
+                );
+
+                return;
+
+            }
+
+
+            /* Reset */
+
+            hideError();
+
+            summaryBox.style.display =
+                "none";
+
+
+            /* Loading */
+
+            loading.style.display =
+                "block";
+
+
+            summarizeBtn.disabled =
+                true;
+
+
+            summarizeBtn.innerText =
+                "⏳ Generating...";
+
+
+            try {
+
+
+                /*
+                    Send dialogue to FastAPI
+                */
+
+                const response =
+                    await fetch(
+                        "/summarize/",
+                        {
+
+                            method: "POST",
+
+                            headers: {
+
+                                "Content-Type":
+                                    "application/json"
+
+                            },
+
+                            body: JSON.stringify({
+
+                                dialogue:
+                                    dialogue
+
+                            })
+
+                        }
+                    );
+
+
+                /* Server error */
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        `Server returned ${response.status}`
+                    );
+
+                }
+
+
+                /*
+                    Convert response
+                    into JSON
+                */
+
+                const data =
+                    await response.json();
+
+
+                /* Make sure summary exists */
+
+                if (!data.summary) {
+
+                    throw new Error(
+                        "No summary received from server."
+                    );
+
+                }
+
+
+                /* Show summary */
+
+                summaryText.innerText =
+                    data.summary;
+
+
+                summaryBox.style.display =
+                    "block";
+
+
+                /* Summary statistics */
+
+                const result =
+                    data.summary;
+
+
+                const resultChars =
+                    result.length;
+
+
+                const resultTokens =
+                    getApproxTokens(result);
+
+
+                summaryChars.innerText =
+                    `${resultChars} characters`;
+
+
+                summaryTokens.innerText =
+                    `~${resultTokens} tokens`;
+
+
+                /* Scroll to result */
+
+                summaryBox.scrollIntoView({
+
+                    behavior: "smooth",
+
+                    block: "nearest"
+
+                });
+
+
+            }
+
+
+            catch (error) {
+
+
+                console.error(error);
+
+
+                showError(
+                    "Unable to generate summary. " +
+                    "Please make sure the FastAPI server is running."
+                );
+
+            }
+
+
+            finally {
+
+
+                /* Stop loading */
+
+                loading.style.display =
+                    "none";
+
+
+                /* Enable button */
+
+                summarizeBtn.disabled =
+                    false;
+
+
+                summarizeBtn.innerText =
+                    "✨ Summarize Dialogue";
+
+            }
+
+        }
+
+
+        /* =================================================
+           SHOW ERROR
+        ================================================== */
+
+        function showError(message) {
+
+            errorBox.innerText =
+                "⚠ " + message;
+
+            errorBox.style.display =
+                "block";
+
+        }
+
+
+        /* =================================================
+           HIDE ERROR
+        ================================================== */
+
+        function hideError() {
+
+            errorBox.style.display =
+                "none";
+
+        }
+
+
+        /* =================================================
+           COPY SUMMARY
+        ================================================== */
+
+        async function copySummary() {
+
+
+            const text =
+                summaryText.innerText;
+
+
+            if (!text) {
+                return;
+            }
+
+
+            try {
+
+                await navigator.clipboard.writeText(
+                    text
+                );
+
+
+                const copyBtn =
+                    document.getElementById(
+                        "copyBtn"
+                    );
+
+
+                copyBtn.innerText =
+                    "✓ Copied";
+
+
+                setTimeout(() => {
+
+                    copyBtn.innerText =
+                        "📋 Copy";
+
+                }, 1800);
+
+
+            }
+
+            catch (error) {
+
+                console.error(error);
+
+            }
+
+        }
+
+
+        /* =================================================
+           CLEAR EVERYTHING
+        ================================================== */
+
+        function clearAll() {
+
+            dialogueInput.value =
+                "";
+
+            summaryText.innerText =
+                "";
+
+            summaryBox.style.display =
+                "none";
+
+            loading.style.display =
+                "none";
+
+            hideError();
+
+            updateCounters();
+
+        }
+
+
+        /* =================================================
+           CTRL + ENTER
+        ================================================== */
+
+        dialogueInput.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (
+                    event.ctrlKey &&
+                    event.key === "Enter"
+                ) {
+
+                    event.preventDefault();
+
+                    summarizeDialogue();
+
+                }
+
+            }
+        );
+
+
+        /* =================================================
+           INITIAL COUNTER
+        ================================================== */
+
+        updateCounters();
+
+
+    </script>
+
+</body>
+
+</html>
